@@ -66,7 +66,7 @@ class Ui_Form(object):
         self.cancel_button.setText(_translate("Form", "Cancel"))
 
     def create_measurement(self):
-        self.field_names.setText("Column " + self.field_name.text() + " Created")
+        self.field_names.setText(self.field_names.text()  + "" + self.field_name.text() + ", ")
 
         client =  InfluxDBClient('localhost' , 8086)
 
