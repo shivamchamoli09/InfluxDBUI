@@ -11,6 +11,12 @@ import pandas as pd
 from influxdb import InfluxDBClient
 from influxdb import DataFrameClient
 
+from PyQt5 import QtCore, QtGui, QtWidgets
+import pandas as pd
+from influxdb import InfluxDBClient
+from influxdb import DataFrameClient
+from create_table import App
+
 class Ui_Form(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
@@ -44,9 +50,15 @@ class Ui_Form(object):
         self.done_button = QtWidgets.QPushButton(self.frame)
         self.done_button.setGeometry(QtCore.QRect(480, 190, 93, 28))
         self.done_button.setObjectName("done_button")
+
+        self.done_button.clicked.connect(self.create_table)
+
         self.cancel_button = QtWidgets.QPushButton(self.frame)
         self.cancel_button.setGeometry(QtCore.QRect(480, 230, 93, 28))
         self.cancel_button.setObjectName("cancel_button")
+
+        self.cancel_button.clicked.connect(sys.exit)
+
         self.field_names = QtWidgets.QLabel(self.frame)
         self.field_names.setGeometry(QtCore.QRect(10, 209, 431, 51))
         self.field_names.setStyleSheet("font-family:Times New Roman; font-size:17px")
@@ -67,22 +79,30 @@ class Ui_Form(object):
 
     def create_measurement(self):
         self.field_names.setText(self.field_names.text()  + "" + self.field_name.text() + ", ")
+        self.field_name.setText("")
 
         client =  InfluxDBClient('localhost' , 8086)
 
-        client.create_database(self.measurement_name.text() )
+         ## client.create_database(self.measurement_name.text() )
        
-        client = DataFrameClient('localhost', 8086, 'root', 'root', self.measurement_name.text())
+         ##client = DataFrameClient('localhost', 8086, 'root', 'root', self.measurement_name.text())
 
     #############################################Create pandas DataFrame
-        df = pd.DataFrame(data=list(range(30)),
-                      index=pd.date_range(start='2018-11-16',
-                                          periods=30, freq='H'), columns=['0'])
+        ## df = pd.DataFrame(data=list(range(30)),
+           ##            index=pd.date_range(start='2018-11-16',
+              ##                             periods=30, freq='H'), columns=['0'])
 
 
     #############################################Write DataFrame
-        client.write_points(df,self.measurement_name.text())
+         ##client.write_points(df,self.measurement_name.text())
+
    
+    def create_table(self):
+        self.window=QtWidgets.QWidget()
+        self.ui= App()
+        self.ui.__init__(self.window)
+        self.window.move(self.centerPoint)
+        self.window.show()
         
 
 
