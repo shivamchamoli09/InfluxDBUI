@@ -1,20 +1,6 @@
-# -*- coding: utf-8 -*-
-
-# Form implementation generated from reading ui file 'create_measurement.ui'
-#
-# Created by: PyQt5 UI code generator 5.11.3
-#
-# WARNING! All changes made in this file will be lost!
-
 from PyQt5 import QtCore, QtGui, QtWidgets
 import pandas as pd
 from influxdb import InfluxDBClient
-from influxdb import DataFrameClient
-
-from PyQt5 import QtCore, QtGui, QtWidgets
-import pandas as pd
-from influxdb import InfluxDBClient
-from influxdb import DataFrameClient
 from create_table import App
 
 class Ui_Form(object):
@@ -78,10 +64,10 @@ class Ui_Form(object):
         self.cancel_button.setText(_translate("Form", "Cancel"))
 
     def create_measurement(self):
-        self.field_names.setText(self.field_names.text()  + "" + self.field_name.text() + ", ")
+        self.field_names.setText(self.field_names.text()   + self.field_name.text() + ", ")
         self.field_name.setText("")
 
-        client =  InfluxDBClient('localhost' , 8086)
+        #client =  InfluxDBClient('localhost' , 8086)
 
          ## client.create_database(self.measurement_name.text() )
        
@@ -98,12 +84,15 @@ class Ui_Form(object):
 
    
     def create_table(self):
-        self.window=QtWidgets.QWidget()
+        #self.window=QtWidgets.QWidget()
         self.ui= App()
-        self.ui.__init__(self.window)
-        self.window.move(self.centerPoint)
-        self.window.show()
-        
+        #self.ui.__init__(self.window)
+        #self.window.move(self.centerPoint)
+        #self.window.show()
+        #print(self.field_names.text())
+        #print(self.measurement_name.text())
+        self.ui.show1(self.field_names.text(), self.measurement_name.text())
+
 
 
 if __name__ == "__main__":
@@ -113,5 +102,4 @@ if __name__ == "__main__":
     ui = Ui_Form()
     ui.setupUi(Form)
     Form.show()
-    sys.exit(app.exec_())
-
+sys.exit(app.exec_())
