@@ -5,6 +5,21 @@ from PyQt5.QtCore import pyqtSlot
 from influxdb import InfluxDBClient
  
 class App(QWidget):
+    def show1(self,cols, measurement_name):
+        self.list=cols
+        self.measurement_name = measurement_name
+
+        self.createTable(self.list, self.measurement_name)
+
+        ##Add box layout, add table to box layout and add box layout to widget
+        self.layout = QVBoxLayout()
+        self.layout.addWidget(self.save_btn) 
+        self.layout.addWidget(self.add_row) 
+
+        self.layout.addWidget(self.tableWidget) 
+        self.setLayout(self.layout)
+        print('a***')
+        self.show()
  
     def __init__(self):
         super().__init__()
@@ -13,67 +28,69 @@ class App(QWidget):
         self.top = 100
         self.width = 1000
         self.height = 800
-        
+        print('a********************')
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
 
         
   
-        list= 'Name, ID, Age, Price, Number, Sales, Amount, Profit' 
-        self.createTable(list)
-
-        ##Add box layout, add table to box layout and add box layout to widget
-        self.layout = QVBoxLayout()
-        self.layout.addWidget(self.tableWidget) 
-        self.setLayout(self.layout) 
  
-        ##Show widget
-        self.show()
- 
-    def createTable(self,list):
+    def createTable(self,list, measurement_name):
+        ##print(measurement_name)
+        self.measurement_name = measurement_name
 
-        c=0
+        self.col_no=0
         for i in list.split(', '):
-            c=c+1
+            self.col_no=self.col_no+1
 
         ##Create table
-        ##print(c)
+
+        self.save_btn = QPushButton("Save", self)
+        self.add_row = QPushButton("Add Row", self)
+        self.columns_name = list
+
+
         self.tableWidget = QTableWidget()
         self.tableWidget.setRowCount(5)
-        self.tableWidget.setColumnCount(c)
-        self.tableWidget.setHorizontalHeaderLabels(list.split(', '))
-        
+        self.tableWidget.setColumnCount(self.col_no-1)
+        self.field_name=list.split(', ')
+        self.tableWidget.setHorizontalHeaderLabels(self.field_name)
+
+        self.save_btn.clicked.connect(self.save_measurement)
+
         self.tableWidget.move(0,0)
  
-    
-        # table selection change
-        self.tableWidget.doubleClicked.connect(self.on_click)
+            # table selection change
+        #self.tableWidget.doubleClicked.connect(self.on_click)
  
-    @pyqtSlot()
-    def on_click(self):
-        print("\n")
-        for currentQTableWidgetItem in self.tableWidget.selectedItems():
-            print(currentQTableWidgetItem.row(), currentQTableWidgetItem.column(), currentQTableWidgetItem.text())
-            ##rowPosition = self.tableWidget.rowCount()
-            ##tableWidget.insertRow(rowPosition)
+    def save_measurement(self):
+       ##print(measurement_name)
+
         client =  InfluxDBClient('localhost' , 8086)
 
         client.create_database('demo')
         client.switch_database('demo')
 
-        json_body=[{
-            "measurement" : 'demo',
+        ##col_name = list.split(", ")
+        #print(measurement_name)
+        points=list()
+        json_body={}
+        json_body["measurement"]=self.measurement_name
+        fields={}
+        for i in range(self.col_no):
+            fields[self.field_name[i]]=self.tableWidget.item(1,i+1).text()
+        json_body['fields']=fields
+        points.append(json_body)
+        print(json_body)
+        client.write_points(points)
 
-            "fields" : {
-                "col1" : currentQTableWidgetItem.text() 
-            }
-        }]
+''' 
+json_body=[{
+                "measurement" : 'demo',
 
-        client.write_points(json_body)
-
+                "fields" : {
+                    "col_name" : currentQTableWidgetItem.text() 
+                }
+            }]
        
- 
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    ex = App()
-    sys.exit(app.exec_())
+'''
