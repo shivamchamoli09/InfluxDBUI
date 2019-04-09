@@ -48,9 +48,13 @@ class App(QWidget):
         self.save_btn = QPushButton("Save", self)
         self.add_row = QPushButton("Add Row", self)
 
+        self.add_row.clicked.connect(self.add_rows)
+
+        self.columns_name = list
+
 
         self.tableWidget = QTableWidget()
-        self.tableWidget.setRowCount(2)
+        self.tableWidget.setRowCount(3)
         self.tableWidget.setColumnCount(self.col_no-1)
         self.field_name=list.split(', ')
         self.tableWidget.setHorizontalHeaderLabels(self.field_name)
@@ -74,27 +78,36 @@ class App(QWidget):
         #print(measurement_name)
         points=list()
         json_body={}
-        json_body["measurement"]=self.measurement_name
+
+        json_body["measurement"] = self.measurement_name
         fields={}
-        self.field_count=0
+
         for i in range(self.tableWidget.rowCount()):
             #print(self.tableWidget.rowCount())
             for j in range(self.col_no-1):
                 self.value = self.tableWidget.item(i,j).text()
                 #print(self.value)
-                fields[self.field_name[self.field_count]]= self.field_name.append(self.value)
-                print(self.field_name[self.field_count])
-                self.field_count=self.field_count + 1
-                if(self.field_count == (self.col_no-1)):
-                   self.field_count = 0
+                fields[self.field_name[j]]= self.value
                 
-        
+                #print(self.field_name[self.field_count])
+                #self.field_count=self.field_count + 1
+                #if(self.field_count == (self.col_no-1)):
+                 #   self.field_count = 0
+                json_body['fields']=fields
+                points.append(json_body)
+                print(json_body)
+            client.write_points(points)   
+
+    def add_rows(self):
+        row_position = self.tableWidget.rowCount()
+        self.tableWidget.insertRow(row_position)    
+
+                   
         
 
 ''' 
 json_body=[{
                 "measurement" : 'demo',
-
                 "fields" : {
                     "col_name" : currentQTableWidgetItem.text() 
                 }
